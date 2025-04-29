@@ -1,4 +1,4 @@
-import pool from "../config/db.js";
+import { pool } from "../database/database.js";
 
 export class CategoryModel {
     
@@ -32,7 +32,7 @@ export class CategoryModel {
 
     static async delete ({ id }){
         const [rows] = await pool.query(
-            "DELETE FROM category WHERE id = ?", [id]
+            "DELETE FROM categories WHERE id = ?", [id]
         )
 
         if(rows.affectedRows <= 0) return false
@@ -42,7 +42,7 @@ export class CategoryModel {
         const { name, description } = input
 
         const [ rows ] = await pool.query(
-            `UPDATE category 
+            `UPDATE categories 
             SET name = IFNULL(?, name),
             description = IFNULL(?, description)
             WHERE id = ?`,

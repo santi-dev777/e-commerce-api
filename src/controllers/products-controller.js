@@ -1,4 +1,4 @@
-import { ValidateProduct, ValidatePartialProduct } from "../utils/products.js";
+import { ValidateProduct, ValidatePartialProduct } from "../schemas/products.js";
 
 export class ProductsController {
     constructor ({productModel}){
@@ -10,7 +10,7 @@ export class ProductsController {
             const products = await this.ProductModel.getAll();
             res.status(200).json(products);
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ error: "error on found" });
         }
     };
 
@@ -20,9 +20,8 @@ export class ProductsController {
             const product = await this.ProductModel.getById(id);
             if(product) return res.status(200).json(product);
             res.status(404).json({ error: 'Product not found' });
-
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ error: "error al buscar" });
         }
     };
 
@@ -30,22 +29,14 @@ export class ProductsController {
         try {
             const result = ValidateProduct(req.body)
             if (!result.success) {
-                return res.status(400).json({ error: result.error.message })
+                return res.status(400).json({ error: JSON.parse(result.error.message) })
             }
-            
-            try {
-                const newProduct = await this.ProductModel.create({ input: result.data })
-                res.status(201).json(newProduct)
-            } catch (error) {
-                // Si el error es específico de categorías, devolver un 404
-                if (error.message === 'Una o más categorías no existen') {
-                    return res.status(404).json({ error: error.message })
-                }
-                // Para otros errores, devolver un 500
-                throw error
-            }
+
+            const newProduct = await this.ProductModel.create({ input: result.data })
+            res.status(201).json(newProduct)
+
         } catch (error) {
-            res.status(500).json({ error: error.message })
+            res.status(500).json({ error: "error on create" })
         }
     };
 
@@ -53,7 +44,7 @@ export class ProductsController {
         try {
             const result = ValidatePartialProduct(req.body)
             if (!result.success) {
-                return res.status(400).json({ error: result.error.message })
+                return res.status(400).json({ error: JSON.parse(result.error.message) })
             }
 
             const updatedProduct = await this.ProductModel.update({ id: req.params.id, input: result.data })
@@ -62,18 +53,21 @@ export class ProductsController {
 
             res.status(200).json(updatedProduct)
         } catch (error) {
-            res.status(500).json({ error: error.message })
+            res.status(500).json({ error: "error on update" })
         }
     };
 
     delete = async (req, res) => {
         try {
             const { id } = req.params;
+
             const result = await this.ProductModel.delete({ id });
+
             if (!result) return res.status(404).json({ error: 'Product not found' });
+
             res.status(200).json({ message: 'Product deleted successfully' });
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ error: "error on delete" });
         }
     };
 }
