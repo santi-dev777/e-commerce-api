@@ -1,0 +1,21 @@
+{
+  "name": "e-commerce",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bunx nodemon ./src/server.js"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.1",
+    "nodemon": "^3.1.10",
+    "zod": "^3.24.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
