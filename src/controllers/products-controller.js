@@ -70,4 +70,15 @@ export class ProductsController {
             res.status(500).json({ error: "error on delete" });
         }
     };
+
+    filterByCategory = async (req, res) => {
+        try {
+            const { categoryId } = req.params;
+            const products = await this.ProductModel.filterByCategory(categoryId);
+            res.status(200).json(products);
+        } catch (error) {
+            console.error("Error filtering by category:", error);
+            res.status(500).json({ error: "error on filter" });
+        }
+    };
 }

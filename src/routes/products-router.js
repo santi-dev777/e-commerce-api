@@ -8,6 +8,9 @@ export const createProductsRouter = ({ productModel }) => {
     const productsController = new ProductsController({ productModel });
 
     router.get("/", productsController.getAll);
+    
+    //filter by category - moved before the :id route to prevent conflict
+    router.get("/category/:categoryId", productsController.filterByCategory);
 
     router.get("/:id", productsController.getById);
 

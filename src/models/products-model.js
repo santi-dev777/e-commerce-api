@@ -2,6 +2,8 @@ import { pool } from "../database/database.js";
 
 export class ProductModel {
 
+  // Methods basic crud
+
     static async getAll() {
         const [products] = await pool.query(
         `SELECT 
@@ -170,6 +172,7 @@ export class ProductModel {
         return this.getById(id);
       }
 
+  
       static async validateCategoryIds(categoryIds) {
         if (!Array.isArray(categoryIds) || categoryIds.length === 0) return;
       
@@ -182,4 +185,34 @@ export class ProductModel {
           throw new Error('Una o más categorías no existen');
         }
       }
+
+    //Filter products by category
+    static async filterByCategory(categoryId) {
+        const [products] = await pool.query(
+          `SELECT 
+          p.*,
+          COALESCE(
+            JSON_ARRAYAGG(
+              IF(c.id IS NOT NULL,
+                JSON_OBJECT('id', c.id, 'name', c.name),
+                NULL
+              )
+            ),
+            JSON_ARRAY()
+          ) AS categories
+          FROM products p
+          INNER JOIN product_categories pc ON p.id = pc.product_id
+          INNER JOIN categories c ON c.id = pc.category_id AND c.id = ?
+          GROUP BY p.id`, 
+            [categoryId]
+        );
+        
+        // Filtrar valores NULL en el array de categorías
+        return products.map(product => {
+            if (product.categories && product.categories[0] === null && product.categories.length === 1) {
+                product.categories = []
+            }
+            return product
+        });
+    }
 }
