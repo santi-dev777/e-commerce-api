@@ -173,7 +173,7 @@ export class ProductModel {
       }
 
   
-      static async validateCategoryIds(categoryIds) {
+    static async validateCategoryIds(categoryIds) {
         if (!Array.isArray(categoryIds) || categoryIds.length === 0) return;
       
         const [existingCategories] = await pool.query(
